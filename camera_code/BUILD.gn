@@ -1,0 +1,36 @@
+static_library("zhwl_app") {
+    sources = [  
+        #"tcp_client.c",
+        #"tcp_server.c", 
+        "wifi_conn.c", 
+        "camera.c"
+    ] 
+
+    include_dirs = [     
+ 
+        "//device/soc/hisilicon/ws63v100/sdkv102/middleware/chips/ws63/nv/nv_config/include", ## key_id.h (nv.h 依赖)
+        "//device/soc/hisilicon/ws63v100/sdkv102/middleware/utils/dfx/dfx_reboot/reboot/shared", ## non_os_reboot.h (v20 重启)
+        "//device/soc/hisilicon/ws63v100/sdkv102/drivers/chips/ws63/include",                   ## core.h (non_os_reboot.h 依赖)
+        "//kernel/liteos_m/kal/cmsis", 
+        "//base/iothardware/peripheral/interfaces/inner_api",   ## iot_gpio.h, iot_i2c.h
+
+        "//device/soc/hisilicon/ws63v100/sdkv102/kernel/osal/include",  ## include "soc_osal.h"  
+        "//device/soc/hisilicon/ws63v100/sdkv102/include/middleware/services/wifi",  ##\wifi_device_config.
+
+        "//device/soc/hisilicon/ws63v100/sdkv102/include/driver",               ## i2c.h, spi.h
+        "//device/soc/hisilicon/ws63v100/sdkv102/drivers/drivers/driver/i2c",   ## i2c.c" 
+        "//device/soc/hisilicon/ws63v100/sdkv102/drivers/drivers/driver/spi",   ## spi.c"
+
+        "//device/soc/hisilicon/ws63v100/adapter/hals/iot_hardware/wifiiot_lite", ##/hal_iot_uart.c 
+        "//device/soc/hisilicon/ws63v100/sdkv102/drivers/chips/ws63/porting/gpio",
+        "//device/soc/hisilicon/ws63v100/sdkv102/drivers/chips/ws63/porting/i2c",
+        "//device/soc/hisilicon/ws63v100/sdkv102/drivers/chips/ws63/porting/uart",
+ 
+        "//device/soc/hisilicon/ws63v100/sdkv102/drivers/adapter/ohos_3.2", # iot_i2c.c
+
+        "//device/soc/hisilicon/ws63v100/sdkv102/drivers/drivers/hal/gpio/v150",  
+        "//device/soc/hisilicon/ws63v100/sdkv102/drivers/chips/ws63/rom/drivers/chips/ws63/porting/pinctrl", # pinctrl_porting.h
+ 
+ 
+    ]
+}

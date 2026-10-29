@@ -1,0 +1,59 @@
+# Copyright (c) 2020 Huawei Device Co., Ltd.
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# WS63E 版本：INMP441 I2S 采集（audio_demo.c 已移植到 WS63 SIO/I2S 驱动）
+# wifi_connect.c 为 Hi3861 专用（wifi_device.h 旧接口），不再参与编译。
+static_library("zhwl_app") {
+    sources = [
+        "audio_demo.c",
+        # "wifi_connect.c",   # Hi3861 only，WS63E 上 WiFi 连接已内置于 audio_demo.c
+    ]
+
+    cflags = [ "-Wno-unused-variable" ]
+    cflags += [ "-Wno-unused-but-set-variable" ]
+    cflags += [ "-Wno-unused-parameter" ]
+
+    # I2S(DMA) 驱动头文件的条件编译宏：i2s.h 中 i2s_dma_attr_t /
+    # i2s_dma_config_t / uapi_i2s_dma_config / uapi_i2s_merge_read_by_dma
+    # 都包在 #if defined(CONFIG_I2S_SUPPORT_DMA) 内。
+    # 这些宏虽在 build/config/target_config/ws63/config.py 的 defines 里，
+    # 但 applications/ 目录的应用编译单元拿不到该组 target defines，
+    # 必须在此处显式定义（与 config.py 中 add by liuyp @20251109 的四条一致）。
+    defines = [
+        "CONFIG_I2S_SUPPORT",
+        "CONFIG_I2S_SUPPORT_DMA",
+        "CONFIG_SIO_USING_V151",
+        "CONFIG_DMA_SUPPORT_LLI",
+    ]
+
+    include_dirs = [
+
+        # ===== 基础 =====
+        "//kernel/liteos_m/kal/cmsis",                                   # cmsis_os2.h
+        "//device/soc/hisilicon/ws63v100/sdkv102/kernel/osal/include",   # soc_osal.h
+        "//device/soc/hisilicon/ws63v100/sdkv102/include",               # errcode.h / common_def.h
+
+        # ===== I2S(SIO) 驱动（INMP441 采集）=====
+        "//device/soc/hisilicon/ws63v100/sdkv102/include/driver",                    # i2s.h, dma.h
+        "//device/soc/hisilicon/ws63v100/sdkv102/drivers/drivers/hal/sio",           # hal_sio.h（MASTER/STD_MODE 等枚举）
+        "//device/soc/hisilicon/ws63v100/sdkv102/drivers/drivers/hal/dma",           # hal_dma.h
+        "//device/soc/hisilicon/ws63v100/sdkv102/drivers/chips/ws63/porting/sio",    # sio_porting.h
+        "//device/soc/hisilicon/ws63v100/sdkv102/drivers/chips/ws63/porting/dma",    # dma_porting.h
+        "//device/soc/hisilicon/ws63v100/sdkv102/drivers/chips/ws63/include",        # platform_core.h / chip_io.h 依赖
+        "//device/soc/hisilicon/ws63v100/sdkv102/middleware/utils/common_headers",  # chip_io.h（sio_porting.h 依赖）
+        "//device/soc/hisilicon/ws63v100/sdkv102/open_source/libboundscheck/include", # securec.h（memset_s 等）
+
+        # ===== WiFi / lwip =====
+        "//device/soc/hisilicon/ws63v100/sdkv102/include/middleware/services/wifi",  # wifi_device.h
+    ]
+}
